@@ -17,6 +17,9 @@ cat sample.csv | csvfilter -filter 名前 -value 山田 -sort 年齢 -type lt
 # 数値/文字列を明示指定
 csvfilter sample.csv -sort 年齢 -type asc:num
 csvfilter sample.csv -sort 名前 -type desc:str
+
+# 最大行数を指定
+csvfilter sample.csv -sort 年齢 -type asc:num -limit 3
 ```
 
 ## オプション
@@ -26,6 +29,7 @@ csvfilter sample.csv -sort 名前 -type desc:str
 - `-value` : 部分一致に使う文字列。
 - `-sort` : ソート対象の列名（ヘッダ名）。
 - `-type` : ソート方向。`asc/desc` または `lt/le/gt/ge`。`:`で比較方法を指定可能（例: `asc:num`, `desc:str`）。
+- `-limit` : 出力する最大データ行数（0は無制限）。
 
 ## 仕様
 

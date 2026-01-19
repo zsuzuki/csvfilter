@@ -19,6 +19,7 @@ type options struct {
 	filterValue string
 	sortCol     string
 	sortType    string
+	maxRows     int
 }
 
 type sortMode int
@@ -58,6 +59,10 @@ func main() {
 		}
 	}
 
+	if opts.maxRows > 0 {
+		filtered = applyLimit(filtered, opts.maxRows)
+	}
+
 	if err := writeCSV(filtered, os.Stdout); err != nil {
 		exitWithError(err)
 	}
@@ -70,6 +75,7 @@ func parseFlags() options {
 	flag.StringVar(&opts.filterValue, "value", "", "substring to match for filtering")
 	flag.StringVar(&opts.sortCol, "sort", "", "column name for sorting")
 	flag.StringVar(&opts.sortType, "type", "asc", "sort direction: asc/desc or lt/le/gt/ge, optionally :num or :str (e.g. asc:num)")
+	flag.IntVar(&opts.maxRows, "limit", 0, "max number of data rows to output (0 = no limit)")
 	flag.Parse()
 
 	if opts.filePath == "" {
@@ -244,6 +250,19 @@ func validateNumeric(rows [][]string, idx int) error {
 		}
 	}
 	return nil
+}
+
+func applyLimit(records [][]string, maxRows int) [][]string {
+	if maxRows <= 0 || len(records) <= 1 {
+		return records
+	}
+	if maxRows >= len(records)-1 {
+		return records
+	}
+	limited := make([][]string, 0, maxRows+1)
+	limited = append(limited, records[0])
+	limited = append(limited, records[1:1+maxRows]...)
+	return limited
 }
 
 func exitWithError(err error) {
